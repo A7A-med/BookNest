@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <View
+        android:id="@+id/colorPreview"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="#000000" />
+
+    <TextView
+        android:id="@+id/tvHexDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="#000000"
+        android:textSize="24sp" />
+
+    <TextView android:text="R" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <SeekBar android:id="@+id/sbRed" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="255" />
+
+    <TextView android:text="G" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <SeekBar android:id="@+id/sbGreen" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="255" />
+
+    <TextView android:text="B" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <SeekBar android:id="@+id/sbBlue" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="255" />
+
+    <EditText
+        android:id="@+id/etColorName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Color Name"
+        android:inputType="text"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Color"
+        android:layout_marginTop="20dp"/>
+</LinearLayout>
