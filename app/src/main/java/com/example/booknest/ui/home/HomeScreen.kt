@@ -33,6 +33,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,7 +43,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.booknest.R
 import com.example.booknest.data.model.Book
 import com.example.booknest.ui.theme.PlayfairDisplay
 
@@ -57,36 +62,45 @@ import com.example.booknest.ui.theme.PlayfairDisplay
 
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
-){
+) {
     val uiState by viewModel.uiState.collectAsState()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
+        state = rememberTopAppBarState()
+    )
     Scaffold(
-        topBar = { HomeTopBar() }
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = { HomeTopBar(scrollBehavior = scrollBehavior) }
     ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         )
-    }
-    when {
-        uiState.isLoading -> LoadingState()
-        uiState.errorMessage != null && uiState.sections.isEmpty() -> ErrorState(
-            message = uiState.errorMessage!!,
-            onRetry = {viewModel.loadHome()}
-        )
-        else -> HomeContent (sections = uiState.sections)
+        {
+            when {
+                uiState.isLoading -> LoadingState()
+                uiState.errorMessage != null && uiState.sections.isEmpty() -> ErrorState(
+                    message = uiState.errorMessage!!,
+                    onRetry = { viewModel.loadHome() }
+                )
+
+                else -> HomeContent(sections = uiState.sections)
+            }
+        }
     }
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeTopBar(){
+private fun HomeTopBar(scrollBehavior:androidx.compose.material3.TopAppBarScrollBehavior){
     TopAppBar(
+        scrollBehavior = scrollBehavior,
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Default.Menu,
+                    painter=painterResource(id=R.drawable.book_nest_logo),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(28.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
