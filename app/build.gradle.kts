@@ -92,6 +92,7 @@ dependencies {
     // FireBase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
+    implementation("com.google.firebase:firebase-storage")
 
     // Testing
     testImplementation(libs.junit)
