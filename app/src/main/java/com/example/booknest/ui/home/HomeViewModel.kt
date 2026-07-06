@@ -27,7 +27,11 @@ class HomeViewModel @Inject constructor(
     private val categories = listOf(
         CategoryQuery("Curated for You", "subject:fiction"),
         CategoryQuery("Science", "subject:science"),
-        CategoryQuery("Business", "subject:business")
+        CategoryQuery("Business", "subject:business"),
+        CategoryQuery("Technology","subject:technology"),
+        CategoryQuery("Travel","subject:travel"),
+        CategoryQuery("Religion","subject:religion"),
+        CategoryQuery("Cooking","subject:cooking")
     )
 
     init {
@@ -59,7 +63,14 @@ class HomeViewModel @Inject constructor(
                     )
                 } else {
                     val sections = results.mapNotNull { (title, result) ->
-                        (result as? Resource.Success)?.let { BookSection(title, it.data) }
+                        when(result){
+                            is Resource.Success -> BookSection(title,result.data)
+                            is Resource.Error ->{
+                                android.util.Log.e("HomeViewModel","Section'$title'failed: ${result.message}")
+                                null
+                            }
+                            else -> null
+                        }
                     }
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
