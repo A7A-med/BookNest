@@ -1,5 +1,7 @@
 package com.example.booknest.di
 
+import com.example.booknest.data.repository.FavoritesRepository
+import com.example.booknest.data.repository.FavoritesRepositoryImpl
 import com.example.booknest.data.repository.BookRepository
 import com.example.booknest.data.repository.BookRepositoryImpl
 import dagger.Binds
@@ -17,3 +19,9 @@ abstract class RepositoryModule {
         impl: BookRepositoryImpl
     ): BookRepository
 }
+
+@Binds
+@Singleton
+abstract fun bindFavoritesRepository(
+    impl: FavoritesRepositoryImpl
+): FavoritesRepository
