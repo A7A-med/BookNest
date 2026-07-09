@@ -10,10 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bf514e3f-1919-47f1-8eb6-c57624deb4c8" name="Changes" comment="Add Login &amp; Sign Up Pages + Nav Graph">
-      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/booknest/NavGraph.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/booknest/NavGraph.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/booknest/data/remote/BookApiService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/booknest/data/remote/BookApiService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/booknest/data/remote/BookMapper.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/booknest/data/remote/BookMapper.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/booknest/data/repository/BookRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/booknest/data/repository/BookRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/booknest/data/repository/BookRepositoryImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/booknest/data/repository/BookRepositoryImpl.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/booknest/ui/details/BookDetailsScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/booknest/ui/details/BookDetailsScreen.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -99,6 +101,7 @@
       <recent name="F:\DEPI Project\BookNest\app\src\main\res\font" />
     </key>
     <key name="K2MoveDeclarationsDialog.RECENT_PACKAGE_KEY">
+      <recent name="com.example.booknest.data.model" />
       <recent name="com.example.booknest.ui.home" />
       <recent name="com.example.booknest.data.reomote" />
     </key>

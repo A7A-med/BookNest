@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface BookRepository {
     fun getBooks(query: String): Flow<Resource<List<Book>>>
+    fun getBookById(bookId: String): Flow<Resource<Book>>
 }

@@ -6,9 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.example.booknest.navigation.bottomNavItem
 import com.example.booknest.ui.LoginAndSignup.LoginScreen
 import com.example.booknest.ui.LoginAndSignup.SignupScreen
@@ -32,7 +34,7 @@ fun NavGraph(navController: NavHostController, auth: FirebaseAuth, db: FirebaseF
                     bottomNavItem.forEach { item ->
                         NavigationBarItem(
                             selected = currentRoute == item.route,
-                            onClick = { navController.navigate(item.route) { popUpTo(0); launchSingleTop = true } },
+                            onClick = { navController.navigate(item.route) { popUpTo(0) { inclusive = true }; launchSingleTop = true } },
                             icon = { Icon(item.icon, contentDescription = item.label) },
                             label = { Text(item.label) }
                         )
@@ -51,9 +53,16 @@ fun NavGraph(navController: NavHostController, auth: FirebaseAuth, db: FirebaseF
             }
             composable("login") { LoginScreen(auth, { navController.navigate("home") }, { navController.navigate("signup") }) }
             composable("home") { HomeScreen(onBookClick = { bookId -> navController.navigate("details/$bookId") }) }
-            composable("details/{bookId}") { backStackEntry ->
-                BookDetailsScreen(bookId = backStackEntry.arguments?.getString("bookId"))
+
+            // التعديل المظبوط هنا:
+            composable(
+                route = "details/{bookId}",
+                arguments = listOf(navArgument("bookId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val bookId = backStackEntry.arguments?.getString("bookId")
+                BookDetailsScreen(bookId = bookId)
             }
+
             composable("category") { CategoryScreen() }
             composable("favorites") { FavoritesScreen() }
             composable("Profile") { ProfileScreen(auth, db, { navController.navigate("login") }, { navController.navigate("favorites") }) }
