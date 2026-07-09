@@ -7,7 +7,7 @@ interface RetrofitInstance {
     @GET("volumes")
     suspend fun searchBooks(
         @Query("q") query: String,
-        @Query("maxResults") maxResults:Int=20,
+        @Query("maxResults") maxResults:Int=30,
         @Query("startIndex") startIndex:Int=0,
         @Query("key") apiKey: String
     ): BookSearchResponseDto

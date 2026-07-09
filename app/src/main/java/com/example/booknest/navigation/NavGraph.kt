@@ -1,37 +1,52 @@
-package com.example.booknest
+package com.example.booknest.navigation
 
+import android.content.Context
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.datastore.preferences.core.edit
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.booknest.navigation.bottomNavItem
+import androidx.navigation.compose.*
 import com.example.booknest.ui.LoginAndSignup.LoginScreen
 import com.example.booknest.ui.LoginAndSignup.SignupScreen
-import com.example.booknest.ui.category.CategoryScreen
+import com.example.booknest.ui.explore.ExploreScreen
 import com.example.booknest.ui.favorites.FavoritesScreen
 import com.example.booknest.ui.home.HomeScreen
 import com.example.booknest.ui.profile.EditProfileScreen
 import com.example.booknest.ui.profile.ProfileScreen
+import com.example.booknest.ui.splash.OnboardingScreen
+import com.example.booknest.ui.splash.UserPreferences
+import com.example.booknest.ui.splash.dataStore
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
-private val routesWithoutBottomBar = setOf("login","signup")
+private val routesWithoutBottomBar = setOf("login", "signup", "onboarding")
+
 @Composable
 fun NavGraph(
     navController: NavHostController,
     auth: FirebaseAuth,
     db: FirebaseFirestore
 ) {
+    val context = LocalContext.current
+    var isFirstTime by remember { mutableStateOf<Boolean?>(null) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        context.dataStore.data.map { prefs ->
+            prefs[UserPreferences.IS_FIRST_TIME] ?: true
+        }.collect { isFirstTime = it }
+    }
+
+    if (isFirstTime == null) return
+
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
+
     Scaffold(
         bottomBar = {
             if (currentRoute !in routesWithoutBottomBar){
@@ -50,7 +65,7 @@ fun NavGraph(
                                     }
                                 }
                             },
-                            icon = {androidx.compose.material3.Icon(item.icon, contentDescription = item.label)},
+                            icon = { Icon(item.icon, contentDescription = item.label) },
                             label = { Text(item.label) }
                         )
                     }
@@ -60,9 +75,27 @@ fun NavGraph(
     ) { innerPadding ->
         NavHost(
             navController=navController,
-            startDestination = "Home",
+            startDestination = if (isFirstTime == true) "onboarding" else "home",
             modifier = Modifier.padding(innerPadding)
         ){
+
+            composable("onboarding") {
+                OnboardingScreen(
+                    onNavigateToSignUp = {
+                        scope.launch { context.dataStore.edit { it[UserPreferences.IS_FIRST_TIME] = false } }
+                        navController.navigate("signup")
+                    },
+                    onNavigateToSignIn = {
+                        scope.launch { context.dataStore.edit { it[UserPreferences.IS_FIRST_TIME] = false } }
+                        navController.navigate("login")
+                    },
+                    onNavigateToGuestHome = {
+                        scope.launch { context.dataStore.edit { it[UserPreferences.IS_FIRST_TIME] = false } }
+                        navController.navigate("home") { popUpTo("onboarding") { inclusive = true } }
+                    }
+                )
+            }
+
             composable("EditProfile") {
                 EditProfileScreen(
                     auth = auth,
@@ -77,7 +110,6 @@ fun NavGraph(
                     db = db,
                     onNavigateToLogin = {
                         navController.navigate("login") {
-                            // نحن نغادر Signup، فنزيلها من الـ Stack
                             popUpTo("signup") { inclusive = true }
                             launchSingleTop = true
                         }
@@ -91,14 +123,12 @@ fun NavGraph(
                     auth = auth,
                     onLoginSuccess = {
                         navController.navigate("home") {
-                            // بعد النجاح، نزيل كل صفحات الـ Auth من الـ Stack
                             popUpTo("signup") { inclusive = true }
                             popUpTo("login") { inclusive = true }
                         }
                     },
                     onNavigateToSignup = {
                         navController.navigate("signup") {
-                            // نحن نغادر Login، فنزيلها من الـ Stack
                             popUpTo("login") { inclusive = true }
                             launchSingleTop = true
                         }
@@ -109,8 +139,8 @@ fun NavGraph(
             composable("home"){
                 HomeScreen(navController = navController)
             }
-            composable("category"){
-                CategoryScreen()
+            composable("explore"){
+                ExploreScreen()
             }
             composable("favorites"){
                 FavoritesScreen()

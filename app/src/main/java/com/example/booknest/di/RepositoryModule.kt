@@ -20,7 +20,6 @@ abstract class RepositoryModule {
         impl: BookRepositoryImpl
     ): BookRepository
 
-    // قم بنقل هذه الدالة إلى هنا داخل أقواس الكلاس
     @Binds
     @Singleton
     abstract fun bindFavoritesRepository(

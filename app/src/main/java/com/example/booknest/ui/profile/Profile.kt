@@ -106,8 +106,8 @@ fun ProfileContent(
             Surface(
                 modifier = Modifier
                     .size(35.dp)
-                    .clip(CircleShape) // مهم للـ ripple effect
-                    .clickable { launcher.launch("image/*") }, // هنا بقى الـ click
+                    .clip(CircleShape)
+                    .clickable { launcher.launch("image/*") },
                 shape = CircleShape,
                 color = MaterialTheme.colorScheme.primary,
                 shadowElevation = 4.dp

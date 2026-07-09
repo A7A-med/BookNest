@@ -5,5 +5,4 @@ import com.example.booknest.data.model.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface BookRepository {
-    fun getBooks(query: String): Flow<Resource<List<Book>>>
-}
+    fun getBooks(query: String, isSearch: Boolean = false): Flow<Resource<List<Book>>>}

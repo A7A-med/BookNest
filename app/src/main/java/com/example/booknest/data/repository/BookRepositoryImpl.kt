@@ -15,17 +15,33 @@ import okio.IOException
 class BookRepositoryImpl @Inject constructor(
     private val apiService: RetrofitInstance
 ) : BookRepository {
-    override fun getBooks(query: String): Flow<Resource<List<Book>>> = flow {
+
+    private val booksCache = mutableMapOf<String, List<Book>>()
+
+    override fun getBooks(query: String, isSearch: Boolean): Flow<Resource<List<Book>>> = flow {
         emit(Resource.Loading)
+
+        if (!isSearch && booksCache.containsKey(query)) {
+            emit(Resource.Success(booksCache[query]!!))
+            return@flow
+        }
+
         val maxRetries = 3
         var lastError: Resource.Error? = null
+
         for (attempt in 1..maxRetries) {
             try {
                 val response = apiService.searchBooks(
                     query = query,
                     apiKey = BuildConfig.BOOKS_API_KEY
                 )
-                emit(Resource.Success(response.toDomainList()))
+                val result = response.toDomainList()
+
+                if (!isSearch) {
+                    booksCache[query] = result
+                }
+
+                emit(Resource.Success(result))
                 return@flow
             } catch (e: CancellationException) {
                 throw e
@@ -46,6 +62,6 @@ class BookRepositoryImpl @Inject constructor(
                 emit(Resource.Error(e.localizedMessage ?: "UnExpected Error"))
             }
         }
-        emit(lastError?: Resource.Error("Failed TO Load Data"))
+        emit(lastError ?: Resource.Error("Failed TO Load Data"))
     }
 }

@@ -7,6 +7,7 @@ import com.example.booknest.data.repository.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +26,7 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     private val categories = listOf(
-        CategoryQuery("Curated for You", "subject:fiction"),
+        CategoryQuery("Just for You", "subject:fiction"),
         CategoryQuery("Science", "subject:science"),
         CategoryQuery("Business", "subject:business"),
         CategoryQuery("Technology","subject:technology"),
@@ -39,11 +40,15 @@ class HomeViewModel @Inject constructor(
     }
 
     fun loadHome() {
+
+        if (_uiState.value.sections.isNotEmpty()) return
+
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
 
             try {
                 val deferredSections = categories.map { category ->
+                    delay(500L)
                     async {
                         val result = repository.getBooks(category.query).first { it !is Resource.Loading }
                         category.title to result

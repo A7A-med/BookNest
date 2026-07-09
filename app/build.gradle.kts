@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.navigation.compose)
+    implementation(libs.books)
     ksp(libs.androidx.room.compiler)
 
     // Retrofit
@@ -95,6 +96,10 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
 
     implementation("com.cloudinary:cloudinary-android:2.0.0")
+
+
+    implementation("androidx.compose.material:material-icons-extended:1.6.8")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // Testing
     testImplementation(libs.junit)

@@ -364,7 +364,7 @@ private fun BookSectionRow(section: BookSection){
     }
 }
 @Composable
-private fun BookCoverCard(book: Book){
+fun BookCoverCard(book: Book){
     Column(modifier = Modifier.width(140.dp)) {
         AsyncImage(
             model = book.thumbnailUrl,
