@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.cloudinary.android.MediaManager
 import com.example.booknest.ui.LoginAndSignup.SignupScreen
 import com.example.booknest.ui.home.HomeScreen
 import com.example.booknest.ui.theme.BookNestTheme
@@ -22,6 +23,16 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val config = mapOf(
+            "cloud_name" to "uubyynq9",
+            "api_key" to "847765613375499",
+            "api_secret" to "o-R2_Jyxlqc2SUiKjnrk5y-iZO0"
+        )
+
+        try {
+            MediaManager.init(this, config)
+        } catch (e: Exception) { }
 
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()

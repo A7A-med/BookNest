@@ -1,5 +1,6 @@
 package com.example.booknest.ui.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -36,8 +38,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,16 +57,28 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.booknest.R
 import com.example.booknest.data.model.Book
 import com.example.booknest.ui.theme.PlayfairDisplay
+import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.runtime.*
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel()
+    navController: NavController,
+    viewModel: HomeViewModel = hiltViewModel(),
+    db: FirebaseFirestore = Firebase.firestore
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
@@ -69,7 +86,7 @@ fun HomeScreen(
     )
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { HomeTopBar(scrollBehavior = scrollBehavior) }
+        topBar = { HomeTopBar(navController = navController, scrollBehavior = scrollBehavior) }
     ) { padding ->
         Box(
             modifier = Modifier
@@ -84,23 +101,23 @@ fun HomeScreen(
                     onRetry = { viewModel.loadHome() }
                 )
 
-                else -> HomeContent(sections = uiState.sections)
+                else -> HomeContent(sections = uiState.sections, db = db)
             }
         }
     }
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeTopBar(scrollBehavior:androidx.compose.material3.TopAppBarScrollBehavior){
+private fun HomeTopBar(navController: NavController, scrollBehavior:androidx.compose.material3.TopAppBarScrollBehavior){
     TopAppBar(
         scrollBehavior = scrollBehavior,
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painter=painterResource(id=R.drawable.book_nest_logo),
+                Image(
+                    painter = painterResource(id = R.drawable.book_nest_logo),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(75.dp),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Fit
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
@@ -111,9 +128,37 @@ private fun HomeTopBar(scrollBehavior:androidx.compose.material3.TopAppBarScroll
                 )
             }
         },
+
+        // Profile Pic
         actions = {
-            IconButton(onClick = { /*TODO search */}) {
-                Icon(Icons.Default.Search, contentDescription = "Search")
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            val profileImageUrl = currentUser?.photoUrl?.toString()
+
+            IconButton(
+                onClick = {
+                    navController.navigate("profile")
+                },
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                if (currentUser != null && !profileImageUrl.isNullOrEmpty()) {
+                    AsyncImage(
+                        model = profileImageUrl,
+                        contentDescription = "Profile",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.default_profile),
+                        contentDescription = "Default Profile",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
             Spacer(modifier = Modifier.width(8.dp))
         }
@@ -140,7 +185,41 @@ private fun ErrorState(message: String,onRetry: () -> Unit){
     }
 }
 @Composable
-private fun HomeContent(sections: List<BookSection>){
+private fun HomeContent(sections: List<BookSection>, db: FirebaseFirestore){
+
+    val auth = FirebaseAuth.getInstance()
+    val currentUser = auth.currentUser
+
+    var fullName by remember { mutableStateOf<String?>(null) }
+
+    val annotatedText by remember(currentUser, fullName) {
+        derivedStateOf {
+            buildAnnotatedString {
+                withStyle(style = SpanStyle(color = Color(0xFF154212), fontWeight = FontWeight.Bold)) {
+                    append("Welcome Back")
+                }
+
+                if (currentUser != null && fullName != null) {
+
+                    withStyle(style = SpanStyle(color = Color(0xFF154212), fontWeight = FontWeight.Bold)){
+                        append(",")}
+
+                    withStyle(style = SpanStyle(color = Color.Gray, fontSize = 25.sp)) {
+                        append("\n$fullName")
+                    }
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(currentUser?.uid) {
+        currentUser?.uid?.let { uid ->
+            db.collection("Users").document(uid).get().addOnSuccessListener { doc ->
+                fullName = doc.getString("Full Name")
+            }
+        }
+    }
+
     val firstBook = sections.firstOrNull()?.books?.firstOrNull()
     val remainingSections = sections.mapIndexed { index, section ->
         if (index == 0) section.copy(books = section.books.drop(1)) else section
@@ -155,7 +234,7 @@ private fun HomeContent(sections: List<BookSection>){
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Welcome Back",
+            text = annotatedText,
             style = MaterialTheme.typography.headlineMedium
         )
         Spacer(modifier = Modifier.height(20.dp))
