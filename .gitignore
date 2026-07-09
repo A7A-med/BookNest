@@ -12,3 +12,8 @@ local.properties
 # OS specific
 .DS_Store
 Thumbs.db
+
+.gradle/
+.idea/
+*.iml
+build/
