@@ -1,13 +1,14 @@
 package com.example.booknest.ui.profile
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
@@ -27,23 +28,44 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.example.booknest.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.example.booknest.R
 
 @Composable
 fun ProfileScreen(
     auth: FirebaseAuth,
     db: FirebaseFirestore,
     onLogout: () -> Unit,
-    onNavigateToFavorites: () -> Unit
+    onNavigateToFavorites: () -> Unit,
+    onLoginClick: () -> Unit,
+    onSignUpClick: () -> Unit,
+    onEditProfileClick: () -> Unit
 ) {
-    val context = LocalContext.current
-    val userId = auth.currentUser?.uid ?: ""
+    val currentUser = auth.currentUser
 
+    if (currentUser == null) {
+        LoggedOutView(onLoginClick = onLoginClick, onSignUpClick = onSignUpClick)
+    } else {
+        ProfileContent(auth = auth, db = db, onLogout = onLogout, onNavigateToFavorites = onNavigateToFavorites, onEditProfileClick = onEditProfileClick)
+    }
+}
+
+@Composable
+fun ProfileContent(
+    auth: FirebaseAuth,
+    db: FirebaseFirestore,
+    onLogout: () -> Unit,
+    onNavigateToFavorites: () -> Unit,
+    onEditProfileClick: () -> Unit
+) {
+
+    val scrollState = rememberScrollState()
+    val userId = auth.currentUser?.uid ?: ""
     var fullName by remember { mutableStateOf("Loading...") }
-    var email by remember { mutableStateOf("Loading...") }
+    var email by remember { mutableStateOf(auth.currentUser?.email ?: "") }
     var imageUrl by remember { mutableStateOf<String?>(null) }
     var savedCount by remember { mutableStateOf(0) }
 
@@ -51,7 +73,6 @@ fun ProfileScreen(
         if (userId.isNotEmpty()) {
             db.collection("Users").document(userId).get().addOnSuccessListener { doc ->
                 fullName = doc.getString("Full Name") ?: "User"
-                email = auth.currentUser?.email ?: ""
                 imageUrl = doc.getString("profileImageUrl")
             }
             db.collection("SavedBooks").whereEqualTo("userId", userId).get().addOnSuccessListener {
@@ -61,44 +82,42 @@ fun ProfileScreen(
     }
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let {
-            uploadImageToFirebase(it, userId, db) { newUrl -> imageUrl = newUrl }
-        }
+        uri?.let { uploadImageToFirebase(it, userId, db) { newUrl -> imageUrl = newUrl } }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier.fillMaxSize().padding(24.dp).verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-            modifier = Modifier.padding(top = 80.dp),
-            contentAlignment = Alignment.BottomEnd
-        ) {
+        Box(modifier = Modifier.padding(top = 48.dp), contentAlignment = Alignment.BottomEnd) {
             AsyncImage(
-                model = imageUrl,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(imageUrl)
+                    .crossfade(true)
+                    .memoryCacheKey(imageUrl)
+                    .diskCacheKey(imageUrl)
+                    .build(),
                 error = painterResource(id = R.drawable.default_profile),
                 placeholder = painterResource(id = R.drawable.default_profile),
                 contentDescription = "Profile",
-                modifier = Modifier
-                    .size(120.dp)
-                    .clip(CircleShape)
-                    .clickable { launcher.launch("image/*") },
+                modifier = Modifier.size(120.dp).clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
-
             Surface(
-                modifier = Modifier.size(35.dp),
+                modifier = Modifier
+                    .size(35.dp)
+                    .clip(CircleShape) // مهم للـ ripple effect
+                    .clickable { launcher.launch("image/*") }, // هنا بقى الـ click
                 shape = CircleShape,
                 color = MaterialTheme.colorScheme.primary,
                 shadowElevation = 4.dp
             ) {
                 Icon(
-                    imageVector = Icons.Default.Edit,
+                    Icons.Default.Edit,
                     contentDescription = "Edit",
                     tint = Color.White,
                     modifier = Modifier.padding(8.dp)
-                )
-            }
+                )            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -127,9 +146,9 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(onClick = {}, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp)) { Text("Edit Profile") }
+        Button(onClick = { onEditProfileClick() }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp)) { Text("Edit Profile") }
 
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = { auth.signOut(); onLogout() },
@@ -156,6 +175,23 @@ fun ProfileInfoCard(label: String, value: String, icon: ImageVector) {
                 Text(value, fontWeight = FontWeight.SemiBold)
             }
         }
+    }
+}
+
+@Composable
+fun LoggedOutView(onLoginClick: () -> Unit, onSignUpClick: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Welcome to BookNest!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text("Please log in to continue.")
+        Spacer(modifier = Modifier.height(32.dp))
+        Button(onClick = onLoginClick, modifier = Modifier.fillMaxWidth()) { Text("Login") }
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedButton(onClick = onSignUpClick, modifier = Modifier.fillMaxWidth()) { Text("Sign Up") }
     }
 }
 

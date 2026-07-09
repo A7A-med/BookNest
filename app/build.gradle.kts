@@ -94,6 +94,8 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation("com.google.firebase:firebase-storage")
 
+    implementation("com.cloudinary:cloudinary-android:2.0.0")
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

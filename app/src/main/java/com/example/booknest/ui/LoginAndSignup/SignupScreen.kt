@@ -7,6 +7,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,6 +34,7 @@ fun SignupScreen(
     auth: FirebaseAuth,
     db: FirebaseFirestore,
     onNavigateToLogin: () -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var fullName by remember { mutableStateOf("") }
@@ -42,7 +46,6 @@ fun SignupScreen(
     var isChecked by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-
 
     Box(
         modifier = modifier
@@ -62,10 +65,23 @@ fun SignupScreen(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.align(Alignment.CenterStart).offset(x = (-16).dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+
                 Image(
                     painter = painterResource(id = R.drawable.book_nest_logo),
                     contentDescription = "BookNest Icon",
-                    modifier = Modifier.size(128.dp)
+                    modifier = Modifier.size(100.dp)
                 )
 
                 Text(
@@ -75,40 +91,21 @@ fun SignupScreen(
                     modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
                 )
 
-                AuthInputField(value = fullName, onValueChange = { fullName = it }, label = "Full Name", placeholder = "E.g. Julian Barnes")
+                AuthInputField(value = fullName, onValueChange = { fullName = it }, label = "Full Name", placeholder = "E.g. Mostafa Ali")
                 Spacer(modifier = Modifier.height(16.dp))
 
-                AuthInputField(value = email, onValueChange = { email = it }, label = "Email Address", placeholder = "julian@modernlibrary.com")
+                AuthInputField(value = email, onValueChange = { email = it }, label = "Email Address", placeholder = "email@example.com")
                 Spacer(modifier = Modifier.height(16.dp))
 
-                PasswordInputField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = "Password",
-                    passwordVisible = passwordVisible,
-                    onVisibilityChange = { passwordVisible = !passwordVisible }
-                )
+                PasswordInputField(value = password, onValueChange = { password = it }, label = "Password", passwordVisible = passwordVisible, onVisibilityChange = { passwordVisible = !passwordVisible })
                 Spacer(modifier = Modifier.height(16.dp))
 
-                PasswordInputField(
-                    value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
-                    label = "Confirm Password",
-                    passwordVisible = confirmPasswordVisible,
-                    onVisibilityChange = { confirmPasswordVisible = !confirmPasswordVisible }
-                )
+                PasswordInputField(value = confirmPassword, onValueChange = { confirmPassword = it }, label = "Confirm Password", passwordVisible = confirmPasswordVisible, onVisibilityChange = { confirmPasswordVisible = !confirmPasswordVisible })
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = isChecked,
-                        onCheckedChange = { isChecked = it },
-                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
-                    )
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = isChecked, onCheckedChange = { isChecked = it }, colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary))
                     Text(
                         text = buildAnnotatedString {
                             append("I agree to the ")
@@ -116,9 +113,7 @@ fun SignupScreen(
                             append(" and ")
                             withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)) { append("Privacy Policy") }
                         },
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(start = 8.dp)
+                        fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 8.dp)
                     )
                 }
 
@@ -126,29 +121,16 @@ fun SignupScreen(
 
                 Button(
                     onClick = {
-                        if (fullName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()  && confirmPassword.isNotEmpty()){
+                        if (fullName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty()){
                             auth.createUserWithEmailAndPassword(email, password)
                                 .addOnSuccessListener { result ->
-                                    val user = hashMapOf(
-                                        "Full Name" to fullName,
-                                        "Role" to "User"
-                                    )
-                                    val userID = result.user?.uid?:""
+                                    val user = hashMapOf("Full Name" to fullName, "Role" to "User")
+                                    val userID = result.user?.uid ?: ""
                                     db.collection("Users").document(userID).set(user)
-                                        .addOnSuccessListener {
-                                            println("Success: Account Created")
-                                            Toast.makeText(context, "Account Created Successfully", Toast.LENGTH_SHORT).show()
-                                        }
-                                        .addOnFailureListener { e->
-                                            println("Firestore Error: ${e.message}")
-                                        }
+                                        .addOnSuccessListener { Toast.makeText(context, "Account Created!", Toast.LENGTH_SHORT).show() }
                                 }
-                                .addOnFailureListener { e ->
-                                    println("Auth Error: ${e.message}")
-                                    Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                                }
-                        }
-                        else{ Toast.makeText(context, "Please Fill All The Fields", Toast.LENGTH_LONG).show() }
+                                .addOnFailureListener { e -> Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_LONG).show() }
+                        } else { Toast.makeText(context, "Please Fill All The Fields", Toast.LENGTH_LONG).show() }
                     },
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = RoundedCornerShape(12.dp),
@@ -163,11 +145,9 @@ fun SignupScreen(
                     Text(text = "Already have an account? ", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(
                         text = "Log in",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.clickable { onNavigateToLogin() }
-                        )
+                    )
                 }
             }
         }

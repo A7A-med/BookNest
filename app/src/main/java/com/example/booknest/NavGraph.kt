@@ -18,6 +18,7 @@ import com.example.booknest.ui.LoginAndSignup.SignupScreen
 import com.example.booknest.ui.category.CategoryScreen
 import com.example.booknest.ui.favorites.FavoritesScreen
 import com.example.booknest.ui.home.HomeScreen
+import com.example.booknest.ui.profile.EditProfileScreen
 import com.example.booknest.ui.profile.ProfileScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -62,27 +63,51 @@ fun NavGraph(
             startDestination = "Home",
             modifier = Modifier.padding(innerPadding)
         ){
-            composable("signup"){
-                SignupScreen(
-                    auth=auth,
-                    db=db,
-                    onNavigateToLogin = {navController.navigate("login")}
+            composable("EditProfile") {
+                EditProfileScreen(
+                    auth = auth,
+                    db = db,
+                    onBack = { navController.popBackStack() }
                 )
             }
-            composable("login"){
+
+            composable("signup") {
+                SignupScreen(
+                    auth = auth,
+                    db = db,
+                    onNavigateToLogin = {
+                        navController.navigate("login") {
+                            // نحن نغادر Signup، فنزيلها من الـ Stack
+                            popUpTo("signup") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+
+            composable("login") {
                 LoginScreen(
-                    auth=auth,
+                    auth = auth,
                     onLoginSuccess = {
-                        navController.navigate("home"){
+                        navController.navigate("home") {
+                            // بعد النجاح، نزيل كل صفحات الـ Auth من الـ Stack
                             popUpTo("signup") { inclusive = true }
                             popUpTo("login") { inclusive = true }
                         }
                     },
-                    onNavigateToSignup = { navController.navigate("signup") }
+                    onNavigateToSignup = {
+                        navController.navigate("signup") {
+                            // نحن نغادر Login، فنزيلها من الـ Stack
+                            popUpTo("login") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onBackClick = { navController.popBackStack() }
                 )
             }
             composable("home"){
-                HomeScreen()
+                HomeScreen(navController = navController)
             }
             composable("category"){
                 CategoryScreen()
@@ -95,12 +120,20 @@ fun NavGraph(
                     auth=auth,
                     db=db,
                     onLogout = {
-                        navController.navigate("login"){
+                        navController.navigate("home"){
                             popUpTo("home") {inclusive=true}
-                            popUpTo("profile") {inclusive=true}
                         }
                     },
-                    onNavigateToFavorites = {navController.navigate("favorites")}
+                    onNavigateToFavorites = {navController.navigate("favorites")},
+                    onLoginClick = {
+                        navController.navigate("login")
+                    },
+                    onSignUpClick = {
+                        navController.navigate("signup")
+                    },
+                    onEditProfileClick = {
+                        navController.navigate("EditProfile")
+                    }
                 )
             }
         }

@@ -9,7 +9,7 @@ data class BookSearchResponseDto(
 
 data class BookItemDto(
     @SerializedName("id") val id: String,
-    @SerializedName("volumeInfo") val volumeInfo: VolumeInfoDto
+    @SerializedName("volumeInfo")  val volumeInfo: VolumeInfoDto
 )
 
 data class VolumeInfoDto(
