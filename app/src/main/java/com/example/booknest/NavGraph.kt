@@ -16,6 +16,7 @@ import com.example.booknest.navigation.bottomNavItem
 import com.example.booknest.ui.LoginAndSignup.LoginScreen
 import com.example.booknest.ui.LoginAndSignup.SignupScreen
 import com.example.booknest.ui.category.CategoryScreen
+import com.example.booknest.ui.details.BookDetailsScreen
 import com.example.booknest.ui.favorites.FavoritesScreen
 import com.example.booknest.ui.home.HomeScreen
 import com.example.booknest.ui.profile.ProfileScreen
@@ -61,6 +62,7 @@ fun NavGraph(
             navController=navController,
             startDestination = "Home",
             modifier = Modifier.padding(innerPadding)
+
         ){
             composable("signup"){
                 SignupScreen(
@@ -81,8 +83,11 @@ fun NavGraph(
                     onNavigateToSignup = { navController.navigate("signup") }
                 )
             }
+            composable("details") {
+                BookDetailsScreen(navController = navController)
+            }
             composable("home"){
-                HomeScreen()
+                HomeScreen(onBookClick = {})
             }
             composable("category"){
                 CategoryScreen()

@@ -1,6 +1,6 @@
 package com.example.booknest.di
 
-import com.example.booknest.data.remote.RetrofitInstance
+import com.example.booknest.data.remote.BookApiService
 import java.util.concurrent.TimeUnit
 import dagger.Module
 import dagger.Provides
@@ -37,14 +37,14 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit{
         return Retrofit.Builder()
-            .baseUrl(RetrofitInstance.BASE_URL)
+            .baseUrl(BookApiService.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
     @Provides
     @Singleton
-    fun provideBookApiService(retrofit: Retrofit): RetrofitInstance{
-        return retrofit.create(RetrofitInstance::class.java)
+    fun provideBookApiService(retrofit: Retrofit): BookApiService{
+        return retrofit.create(BookApiService::class.java)
     }
 }

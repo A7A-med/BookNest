@@ -3,7 +3,7 @@ package com.example.booknest.data.remote
 import retrofit2.http.Query
 import retrofit2.http.GET
 
-interface RetrofitInstance {
+interface BookApiService {
     @GET("volumes")
     suspend fun searchBooks(
         @Query("q") query: String,

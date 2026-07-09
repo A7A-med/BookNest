@@ -2,7 +2,7 @@ package com.example.booknest.data.repository
 
 import com.example.booknest.data.model.Book
 import com.example.booknest.data.model.Resource
-import com.example.booknest.data.remote.RetrofitInstance
+import com.example.booknest.data.remote.BookApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -13,7 +13,7 @@ import kotlinx.coroutines.delay
 import okio.IOException
 
 class BookRepositoryImpl @Inject constructor(
-    private val apiService: RetrofitInstance
+    private val apiService: BookApiService
 ) : BookRepository {
     override fun getBooks(query: String): Flow<Resource<List<Book>>> = flow {
         emit(Resource.Loading)
