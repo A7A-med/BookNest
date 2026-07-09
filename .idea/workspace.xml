@@ -9,7 +9,20 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf514e3f-1919-47f1-8eb6-c57624deb4c8" name="Changes" comment="Add Login &amp; Sign Up Pages + Nav Graph" />
+    <list default="true" id="bf514e3f-1919-47f1-8eb6-c57624deb4c8" name="Changes" comment="Add Login &amp; Sign Up Pages + Nav Graph">
+      <change beforePath="$PROJECT_DIR$/.gradle/9.2.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/9.2.1/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/9.2.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/9.2.1/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/9.2.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/9.2.1/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/9.2.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/9.2.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/9.2.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/9.2.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/booknest/di/RepositoryModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/booknest/di/RepositoryModule.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -44,12 +57,12 @@
     &quot;assignee&quot;: &quot;georgejoseph308&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/A7A-med/BookNest",
-    "accountId": "85c94637-7dd4-4502-9d5c-872efb8fd23d"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/A7A-med/BookNest.git&quot;,
+    &quot;accountId&quot;: &quot;85c94637-7dd4-4502-9d5c-872efb8fd23d&quot;
   }
-}]]></component>
+}</component>
   <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="C:\Users\ahmed\.gradle\wrapper\dists\gradle-9.2.1-bin\2t0n5ozlw9xmuyvbp7dnzaxug\gradle-9.2.1" javaHome="D:\Programs\Android Studio\jbr" gradleVersion="9.2.1" />
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -73,9 +86,10 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "main",
+    "com.google.services.firebase.aqiPopupShown": "true",
+    "git-widget-placeholder": "#3 on Ali",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/Projects/BookNest/app/src/main/res/drawable"
+    "last_opened_file_path": "D:/Projects/TESTING BOOKNEST/BookNest"
   }
 }]]></component>
   <component name="RecentsManager">

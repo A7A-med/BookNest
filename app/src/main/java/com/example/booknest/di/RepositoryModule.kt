@@ -13,15 +13,17 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
+
     @Binds
     @Singleton
     abstract fun bindBookRepository(
         impl: BookRepositoryImpl
     ): BookRepository
-}
 
-@Binds
-@Singleton
-abstract fun bindFavoritesRepository(
-    impl: FavoritesRepositoryImpl
-): FavoritesRepository
+    // قم بنقل هذه الدالة إلى هنا داخل أقواس الكلاس
+    @Binds
+    @Singleton
+    abstract fun bindFavoritesRepository(
+        impl: FavoritesRepositoryImpl
+    ): FavoritesRepository
+}
