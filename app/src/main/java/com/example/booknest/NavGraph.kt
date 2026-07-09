@@ -1,10 +1,7 @@
 package com.example.booknest
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -23,34 +20,20 @@ import com.example.booknest.ui.profile.ProfileScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-private val routesWithoutBottomBar = setOf("login","signup")
 @Composable
-fun NavGraph(
-    navController: NavHostController,
-    auth: FirebaseAuth,
-    db: FirebaseFirestore
-) {
+fun NavGraph(navController: NavHostController, auth: FirebaseAuth, db: FirebaseFirestore) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
+
     Scaffold(
         bottomBar = {
-            if (currentRoute !in routesWithoutBottomBar){
-                NavigationBar{
+            if (currentRoute !in setOf("login", "signup")) {
+                NavigationBar {
                     bottomNavItem.forEach { item ->
                         NavigationBarItem(
                             selected = currentRoute == item.route,
-                            onClick = {
-                                if(currentRoute != item.route){
-                                    navController.navigate(item.route){
-                                        popUpTo(navController.graph.startDestinationId){
-                                            saveState=true
-                                        }
-                                        launchSingleTop=true
-                                        restoreState=true
-                                    }
-                                }
-                            },
-                            icon = {androidx.compose.material3.Icon(item.icon, contentDescription = item.label)},
+                            onClick = { navController.navigate(item.route) { popUpTo(0); launchSingleTop = true } },
+                            icon = { Icon(item.icon, contentDescription = item.label) },
                             label = { Text(item.label) }
                         )
                     }
@@ -58,56 +41,22 @@ fun NavGraph(
             }
         }
     ) { innerPadding ->
-        NavHost(
-            navController=navController,
-            startDestination = "Home",
-            modifier = Modifier.padding(innerPadding)
-
-        ){
-            composable("signup"){
+        NavHost(navController = navController, startDestination = "home", modifier = Modifier.padding(innerPadding)) {
+            composable("signup") {
                 SignupScreen(
-                    auth=auth,
-                    db=db,
-                    onNavigateToLogin = {navController.navigate("login")}
+                    auth = auth,
+                    db = db,
+                    onNavigateToLogin = { navController.navigate("login") }
                 )
             }
-            composable("login"){
-                LoginScreen(
-                    auth=auth,
-                    onLoginSuccess = {
-                        navController.navigate("home"){
-                            popUpTo("signup") { inclusive = true }
-                            popUpTo("login") { inclusive = true }
-                        }
-                    },
-                    onNavigateToSignup = { navController.navigate("signup") }
-                )
+            composable("login") { LoginScreen(auth, { navController.navigate("home") }, { navController.navigate("signup") }) }
+            composable("home") { HomeScreen(onBookClick = { bookId -> navController.navigate("details/$bookId") }) }
+            composable("details/{bookId}") { backStackEntry ->
+                BookDetailsScreen(bookId = backStackEntry.arguments?.getString("bookId"))
             }
-            composable("details") {
-                BookDetailsScreen(navController = navController)
-            }
-            composable("home"){
-                HomeScreen(onBookClick = {})
-            }
-            composable("category"){
-                CategoryScreen()
-            }
-            composable("favorites"){
-                FavoritesScreen()
-            }
-            composable("Profile"){
-                ProfileScreen(
-                    auth=auth,
-                    db=db,
-                    onLogout = {
-                        navController.navigate("login"){
-                            popUpTo("home") {inclusive=true}
-                            popUpTo("profile") {inclusive=true}
-                        }
-                    },
-                    onNavigateToFavorites = {navController.navigate("favorites")}
-                )
-            }
+            composable("category") { CategoryScreen() }
+            composable("favorites") { FavoritesScreen() }
+            composable("Profile") { ProfileScreen(auth, db, { navController.navigate("login") }, { navController.navigate("favorites") }) }
         }
     }
 }

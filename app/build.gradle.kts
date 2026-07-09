@@ -26,8 +26,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BOOKS_API_KEY", "\"${project.findProperty("BOOKS_API_KEY") ?: ""}\"")
-    }
+        buildConfigField("String", "BOOKS_API_KEY", "\"${localProperties["BOOKS_API_KEY"]}\"")    }
 
     buildTypes {
         release {
