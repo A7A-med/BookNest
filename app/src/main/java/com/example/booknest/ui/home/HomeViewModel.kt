@@ -2,6 +2,7 @@ package com.example.booknest.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.booknest.data.model.Book
 import com.example.booknest.data.model.Resource
 import com.example.booknest.data.repository.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,6 +40,10 @@ class HomeViewModel @Inject constructor(
         loadHome()
     }
 
+    fun getBookById(id: String): Book? {
+        val sections = _uiState.value.sections
+        return sections.flatMap { it.books }.find { it.id == id }
+    }
     fun loadHome() {
 
         if (_uiState.value.sections.isNotEmpty()) return

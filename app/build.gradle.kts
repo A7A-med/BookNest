@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.androidx.compose.runtime)
     implementation(libs.navigation.compose)
     implementation(libs.books)
+    implementation(libs.androidx.compose.remote.creation.core)
     ksp(libs.androidx.room.compiler)
 
     // Retrofit

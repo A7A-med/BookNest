@@ -29,6 +29,13 @@ class ExploreViewModel @Inject constructor(
         fetchBooks()
     }
 
+    fun getBookById(id: String): Book? {
+        val resource = _books.value
+        return if (resource is Resource.Success) {
+            resource.data.find { it.id == id }
+        } else null
+    }
+
     fun onSearchQueryChange(newQuery: String) {
         _searchQuery.value = newQuery
         //fetchBooks()
@@ -45,12 +52,16 @@ class ExploreViewModel @Inject constructor(
 
     private fun fetchBooks() {
         viewModelScope.launch {
-            val isSearching = _searchQuery.value.isNotEmpty()
+            _books.value = Resource.Loading
 
+            val isSearching = _searchQuery.value.isNotEmpty()
             val q = if (isSearching) _searchQuery.value else _selectedCategory.value
 
-            repository.getBooks(q, isSearch = isSearching).collect { resource ->
-                _books.value = resource
+            try {
+                val result = repository.getBooks(q, isSearch = isSearching).last()
+                _books.value = result
+            } catch (e: Exception) {
+                _books.value = Resource.Error("Error: ${e.message}")
             }
         }
     }

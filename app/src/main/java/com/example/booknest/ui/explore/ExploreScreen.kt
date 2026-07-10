@@ -20,11 +20,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.text.input.ImeAction
+import androidx.navigation.NavController
 import com.example.booknest.ui.home.BookCoverCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExploreScreen(viewModel: ExploreViewModel = hiltViewModel()) {
+fun ExploreScreen(navController: NavController, viewModel: ExploreViewModel = hiltViewModel()) {
     val booksState by viewModel.books.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
@@ -87,8 +88,12 @@ fun ExploreScreen(viewModel: ExploreViewModel = hiltViewModel()) {
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(state.data) { book ->
-                        // هنا نستخدم نفس الاستايل الموجود في الهوم
-                        BookCoverCard(book = book)
+                        BookCoverCard(
+                            book = book,
+                            onClick = { selectedBook ->
+                                navController.navigate("book_details/${selectedBook.id}")
+                            }
+                        )
                     }
                 }
             }

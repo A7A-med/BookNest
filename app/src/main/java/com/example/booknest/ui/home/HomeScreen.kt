@@ -2,6 +2,7 @@ package com.example.booknest.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -101,7 +102,7 @@ fun HomeScreen(
                     onRetry = { viewModel.loadHome() }
                 )
 
-                else -> HomeContent(sections = uiState.sections, db = db)
+                else -> HomeContent(sections = uiState.sections, db = db, navController = navController)
             }
         }
     }
@@ -185,7 +186,7 @@ private fun ErrorState(message: String,onRetry: () -> Unit){
     }
 }
 @Composable
-private fun HomeContent(sections: List<BookSection>, db: FirebaseFirestore){
+private fun HomeContent(sections: List<BookSection>, db: FirebaseFirestore, navController: NavController){
 
     val auth = FirebaseAuth.getInstance()
     val currentUser = auth.currentUser
@@ -239,12 +240,12 @@ private fun HomeContent(sections: List<BookSection>, db: FirebaseFirestore){
         )
         Spacer(modifier = Modifier.height(20.dp))
         if (firstBook !=null){
-            TrendingBanner(book = firstBook)
+            TrendingBanner(book = firstBook, navController = navController)
             Spacer(modifier = Modifier.height(24.dp))
         }
         remainingSections.forEach { section ->
             if (section.books.isNotEmpty()){
-                BookSectionRow(section=section)
+                BookSectionRow(section = section, navController = navController)
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
@@ -252,7 +253,7 @@ private fun HomeContent(sections: List<BookSection>, db: FirebaseFirestore){
     }
 }
 @Composable
-private fun TrendingBanner(book: Book){
+private fun TrendingBanner(book: Book, navController: NavController){
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -314,7 +315,10 @@ private fun TrendingBanner(book: Book){
             Spacer(modifier = Modifier.height(16.dp))
             Surface(
                 shape = RoundedCornerShape(50),
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable {
+                    navController.navigate("book_details/${book.id}")
+                }
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
@@ -338,7 +342,7 @@ private fun TrendingBanner(book: Book){
     }
 }
 @Composable
-private fun BookSectionRow(section: BookSection){
+private fun BookSectionRow(section: BookSection, navController: NavController){
     Column{
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -358,14 +362,18 @@ private fun BookSectionRow(section: BookSection){
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(section.books, key = {it.id}){book ->
-                BookCoverCard(book=book)
+                BookCoverCard(
+                    book=book,
+                    onClick = { selectedBook ->
+                        navController.navigate("book_details/${selectedBook.id}")
+                    })
             }
         }
     }
 }
 @Composable
-fun BookCoverCard(book: Book){
-    Column(modifier = Modifier.width(140.dp)) {
+fun BookCoverCard(book: Book, onClick: (Book) -> Unit){
+    Column(modifier = Modifier.width(140.dp).clickable { onClick(book) }) {
         AsyncImage(
             model = book.thumbnailUrl,
             contentDescription = book.title,

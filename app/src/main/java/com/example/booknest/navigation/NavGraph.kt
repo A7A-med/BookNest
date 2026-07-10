@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.example.booknest.ui.LoginAndSignup.LoginScreen
 import com.example.booknest.ui.LoginAndSignup.SignupScreen
+import com.example.booknest.ui.details.BookDetailsScreen
 import com.example.booknest.ui.explore.ExploreScreen
 import com.example.booknest.ui.favorites.FavoritesScreen
 import com.example.booknest.ui.home.HomeScreen
@@ -23,8 +24,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
-private val routesWithoutBottomBar = setOf("login", "signup", "onboarding")
+private val routesWithoutBottomBar = setOf("login", "signup", "EditProfile", "onboarding","book_details/{bookId}")
 
 @Composable
 fun NavGraph(
@@ -78,6 +81,14 @@ fun NavGraph(
             startDestination = if (isFirstTime == true) "onboarding" else "home",
             modifier = Modifier.padding(innerPadding)
         ){
+
+            composable(
+                route = "book_details/{bookId}",
+                arguments = listOf(navArgument("bookId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val bookId = backStackEntry.arguments?.getString("bookId")
+                BookDetailsScreen(bookId = bookId, navController = navController)
+            }
 
             composable("onboarding") {
                 OnboardingScreen(
@@ -140,7 +151,7 @@ fun NavGraph(
                 HomeScreen(navController = navController)
             }
             composable("explore"){
-                ExploreScreen()
+                ExploreScreen(navController = navController)
             }
             composable("favorites"){
                 FavoritesScreen()

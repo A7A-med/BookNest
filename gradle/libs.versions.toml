@@ -25,6 +25,7 @@ googleid = "1.2.0"
 runtime = "1.11.4"
 navigationCompose = "2.9.8"
 books = "1.0.0"
+remoteCreationCore = "1.0.0-alpha14"
 
 [libraries]
 # Main Libraries
@@ -75,6 +76,7 @@ googleid = { group = "com.google.android.libraries.identity.googleid", name = "g
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 books = { group = "com.google.android.mediahome", name = "books", version.ref = "books" }
+androidx-compose-remote-creation-core = { group = "androidx.compose.remote", name = "remote-creation-core", version.ref = "remoteCreationCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
