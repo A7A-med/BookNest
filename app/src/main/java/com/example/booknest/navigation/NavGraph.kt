@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.booknest.ui.category.CategoryBooksScreen
 
 private val routesWithoutBottomBar = setOf("login", "signup", "EditProfile", "onboarding","book_details/{bookId}")
 
@@ -89,7 +90,20 @@ fun NavGraph(
                 val bookId = backStackEntry.arguments?.getString("bookId")
                 BookDetailsScreen(bookId = bookId, navController = navController)
             }
-
+            composable(
+                route="category_books/{categoryTitle}/{categoryQuery}",
+                arguments = listOf(
+                    navArgument("categoryTitle"){type= NavType.StringType},
+                    navArgument("categoryQuery"){type= NavType.StringType}
+                )
+            ){
+                CategoryBooksScreen(
+                    onBackClick = {navController.popBackStack()},
+                    onBookClick = { bookId ->
+                        navController.navigate("book_details/$bookId")
+                    }
+                )
+            }
             composable("onboarding") {
                 OnboardingScreen(
                     onNavigateToSignUp = {
@@ -148,7 +162,12 @@ fun NavGraph(
                 )
             }
             composable("home"){
-                HomeScreen(navController = navController)
+                HomeScreen(
+                    onCategoryClick = {title, query ->
+                        navController.navigate("category_books/$title/${java.net.URLEncoder.encode(query,"UTF-8")}")
+                    },
+                    navController = navController
+                )
             }
             composable("explore"){
                 ExploreScreen(navController = navController)

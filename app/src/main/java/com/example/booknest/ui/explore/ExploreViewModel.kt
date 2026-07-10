@@ -38,7 +38,6 @@ class ExploreViewModel @Inject constructor(
 
     fun onSearchQueryChange(newQuery: String) {
         _searchQuery.value = newQuery
-        //fetchBooks()
     }
 
     fun onCategorySelected(category: String) {
@@ -55,7 +54,11 @@ class ExploreViewModel @Inject constructor(
             _books.value = Resource.Loading
 
             val isSearching = _searchQuery.value.isNotEmpty()
-            val q = if (isSearching) _searchQuery.value else _selectedCategory.value
+            val q = if (isSearching){
+                _searchQuery.value
+            } else {
+                "subject:${_selectedCategory.value.lowercase()}"
+            }
 
             try {
                 val result = repository.getBooks(q, isSearch = isSearching).last()
