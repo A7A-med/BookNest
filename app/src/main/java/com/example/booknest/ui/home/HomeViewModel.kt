@@ -8,7 +8,6 @@ import com.example.booknest.data.repository.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,8 +43,8 @@ class HomeViewModel @Inject constructor(
         val sections = _uiState.value.sections
         return sections.flatMap { it.books }.find { it.id == id }
     }
-    fun loadHome() {
 
+    fun loadHome() {
         if (_uiState.value.sections.isNotEmpty()) return
 
         viewModelScope.launch {
@@ -53,10 +52,9 @@ class HomeViewModel @Inject constructor(
 
             try {
                 val deferredSections = categories.map { category ->
-                    delay(500L)
                     async {
                         val result = repository.getBooks(category.query).first { it !is Resource.Loading }
-                        category.title to result
+                        category to result
                     }
                 }
 
@@ -72,11 +70,11 @@ class HomeViewModel @Inject constructor(
                         errorMessage = firstError
                     )
                 } else {
-                    val sections = results.mapNotNull { (title, result) ->
+                    val sections = results.mapNotNull { (category, result) ->
                         when(result){
-                            is Resource.Success -> BookSection(title,result.data)
-                            is Resource.Error ->{
-                                android.util.Log.e("HomeViewModel","Section'$title'failed: ${result.message}")
+                            is Resource.Success -> BookSection(category.title, category.query, result.data)
+                            is Resource.Error -> {
+                                android.util.Log.e("HomeViewModel", "Section '${category.title}' failed: ${result.message}")
                                 null
                             }
                             else -> null
@@ -91,7 +89,7 @@ class HomeViewModel @Inject constructor(
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    errorMessage = e.localizedMessage ?: "UnExpected Error"
+                    errorMessage = e.localizedMessage ?: "Unexpected Error"
                 )
             }
         }

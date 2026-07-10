@@ -4,6 +4,7 @@ import com.example.booknest.data.model.Book
 
 data class BookSection(
     val title: String,
+    val query:String,
     val books: List<Book>
 )
 data class HomeUiState(

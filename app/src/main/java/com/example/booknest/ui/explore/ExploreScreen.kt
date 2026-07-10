@@ -30,7 +30,7 @@ fun ExploreScreen(navController: NavController, viewModel: ExploreViewModel = hi
     val searchQuery by viewModel.searchQuery.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
 
-    val categories = listOf("Fiction", "History", "Science", "Technology")
+    val categories = listOf("Fiction", "Science", "Business", "Technology","Travel","Religion")
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         OutlinedTextField(
