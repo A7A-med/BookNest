@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.booknest.data.local.FavoriteBookEntity
 import com.example.booknest.data.repository.FavoritesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -28,5 +29,15 @@ class FavoritesViewModel @Inject constructor(
         viewModelScope.launch {
             repository.removeBook(bookId)
         }
+    }
+
+    fun addBook(book: FavoriteBookEntity) {
+        viewModelScope.launch {
+            repository.addBook(book)
+        }
+    }
+
+    fun isBookFavorite(bookId: String): Flow<Boolean> {
+        return repository.isBookFavorite(bookId)
     }
 }

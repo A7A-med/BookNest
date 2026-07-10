@@ -19,5 +19,5 @@ interface FavoriteBookDao {
     fun getFavoriteBooks(): Flow<List<FavoriteBookEntity>>
 
     @Query("SELECT EXISTS(SELECT 1 FROM favorite_books WHERE id = :bookId)")
-    suspend fun isFavorite(bookId: String): Boolean
+    fun isFavorite(bookId: String): Flow<Boolean>
 }
