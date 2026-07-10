@@ -22,32 +22,20 @@ import coil.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
 import com.example.booknest.data.model.Book
 import com.example.booknest.ui.theme.PlayfairDisplay
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.example.booknest.data.local.FavoriteBookEntity
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 @Composable
-fun FavoritesScreen() {
+fun FavoritesScreen(
+    viewModel: FavoritesViewModel = hiltViewModel()
+) {
 
-    val favoriteBooks = listOf(
-        Book(
-            id = "1",
-            title = "Atomic Habits",
-            authors = "James Clear",
-            description = "",
-            category = "",
-            rating = 4.8,
-            publishedDate = "",
-            thumbnailUrl = "https://covers.openlibrary.org/b/id/10523338-L.jpg"
-        ),
-        Book(
-            id = "2",
-            title = "Deep Work",
-            authors = "Cal Newport",
-            description = "",
-            category = "",
-            rating = 4.7,
-            publishedDate = "",
-            thumbnailUrl = "https://covers.openlibrary.org/b/id/11153228-L.jpg"
-        )
-    )
+    val favoriteBooks by viewModel.favoriteBooks.collectAsState()
 
     Column(
         modifier = Modifier
@@ -84,7 +72,9 @@ fun FavoritesScreen() {
 }
 
 @Composable
-private fun FavoriteBookCard(book: Book) {
+private fun FavoriteBookCard(
+    book: FavoriteBookEntity
+) {
 
     Card(
         shape = RoundedCornerShape(16.dp),

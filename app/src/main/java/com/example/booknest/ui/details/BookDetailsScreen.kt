@@ -40,13 +40,16 @@ import coil.compose.AsyncImage
 import com.example.booknest.data.model.Resource
 import com.example.booknest.ui.explore.ExploreViewModel
 import com.example.booknest.ui.home.HomeViewModel
+import com.example.booknest.data.local.FavoriteBookEntity
+import com.example.booknest.ui.favorites.FavoritesViewModel
 
 @Composable
 fun BookDetailsScreen(
     bookId: String?,
     navController: NavController,
     homeViewModel: HomeViewModel = hiltViewModel(),
-    exploreViewModel: ExploreViewModel = hiltViewModel()
+    exploreViewModel: ExploreViewModel = hiltViewModel(),
+    favoritesViewModel: FavoritesViewModel = hiltViewModel()
 ) {
     val homeUiState by homeViewModel.uiState.collectAsState()
     val exploreResource by exploreViewModel.books.collectAsState()
@@ -119,7 +122,31 @@ fun BookDetailsScreen(
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                    IconButton(onClick = { isFavorite = !isFavorite }) {
+                    IconButton(
+                        onClick = {
+
+                            isFavorite = !isFavorite
+
+                            if (isFavorite) {
+
+                                favoritesViewModel.addBook(
+                                    FavoriteBookEntity(
+                                        id = book.id,
+                                        title = book.title,
+                                        authors = book.authors,
+                                        description = book.description,
+                                        category = book.category,
+                                        rating = book.rating,
+                                        publishedDate = book.publishedDate,
+                                        thumbnailUrl = book.thumbnailUrl
+                                    )
+                                )
+
+                            } else {
+                                favoritesViewModel.removeBook(book.id)
+                            }
+                        }
+                    ) {
                         Icon(
                             imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
@@ -198,10 +225,30 @@ fun BookDetailsScreen(
                         )
                     }
 
-                    OutlinedIconButton(
-                        onClick = { isFavorite = !isFavorite },
-                        modifier = Modifier.size(52.dp),
-                        shape = CircleShape
+                    IconButton(
+                        onClick = {
+
+                            isFavorite = !isFavorite
+
+                            if (isFavorite) {
+
+                                favoritesViewModel.addBook(
+                                    FavoriteBookEntity(
+                                        id = book.id,
+                                        title = book.title,
+                                        authors = book.authors,
+                                        description = book.description,
+                                        category = book.category,
+                                        rating = book.rating,
+                                        publishedDate = book.publishedDate,
+                                        thumbnailUrl = book.thumbnailUrl
+                                    )
+                                )
+
+                            } else {
+                                favoritesViewModel.removeBook(book.id)
+                            }
+                        }
                     ) {
                         Icon(
                             imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,

@@ -29,4 +29,10 @@ class FavoritesViewModel @Inject constructor(
             repository.removeBook(bookId)
         }
     }
+
+    fun addBook(book: FavoriteBookEntity) {
+        viewModelScope.launch {
+            repository.addBook(book)
+        }
+    }
 }
